@@ -1,12 +1,21 @@
 # Enterprise Kubernetes Deployment Platform
 
-A production-style DevOps project demonstrating:
+## Project Overview
 
-- GitHub
+This project demonstrates how to build a production-style DevOps platform using:
+
+- AWS EC2
+- Ubuntu Linux
+- Git & GitHub
 - Docker
 - Jenkins
 - SonarQube
-- Kubernetes
 - GitHub Actions
-- AWS
+- Kubernetes
 - Bash Automation
+
+## Application
+
+The platform deploys the Google Online Boutique application as the workload.
+
+The focus of this project is on automation, CI/CD, containerization, and Kubernetes deployment rather than application development.
