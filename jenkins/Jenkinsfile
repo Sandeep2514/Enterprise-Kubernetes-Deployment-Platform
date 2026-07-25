@@ -1,13 +1,60 @@
 pipeline {
+
     agent any
+
+    environment {
+        DOCKER_USERNAME = "your-dockerhub-username"
+        IMAGE_TAG = "v${BUILD_NUMBER}"
+    }
 
     stages {
 
-        stage('Build') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
+        stage('Build') {
+            steps {
+                echo 'Building application...'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube Analysis...'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker Images...'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing Docker Images to Docker Hub...'
+            }
+        }
+
     }
+
+    post {
+
+        always {
+            echo 'Pipeline execution completed.'
+        }
+
+        success {
+            echo 'Build completed successfully.'
+        }
+
+        failure {
+            echo 'Build failed.'
+        }
+
+    }
+
 }
