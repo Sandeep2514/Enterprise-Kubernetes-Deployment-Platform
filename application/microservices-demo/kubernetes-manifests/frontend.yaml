@@ -44,7 +44,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: frontend
+          image: sandeep2514/frontend:v11
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -99,10 +99,10 @@ spec:
           #   value: "" # This value would look like "http://123.123.123"
           resources:
             requests:
-              cpu: 100m
+              cpu: 50m
               memory: 64Mi
             limits:
-              cpu: 200m
+              cpu: 50m
               memory: 128Mi
 ---
 apiVersion: v1

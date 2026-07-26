@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: productcatalogservice
+        image: sandeep2514/productcatalogservice:v11
         ports:
         - containerPort: 3550
         env:
@@ -59,10 +59,10 @@ spec:
             port: 3550
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 64Mi
           limits:
-            cpu: 200m
+            cpu: 50m
             memory: 128Mi
 ---
 apiVersion: v1

@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: cartservice
+        image: sandeep2514/cartservice:v11
         ports:
         - containerPort: 7070
         env:
@@ -51,7 +51,7 @@ spec:
           value: "redis-cart:6379"
         resources:
           requests:
-            cpu: 200m
+            cpu: 50m
             memory: 64Mi
           limits:
             cpu: 300m

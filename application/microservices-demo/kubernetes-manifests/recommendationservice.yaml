@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: recommendationservice
+        image: sandeep2514/recommendationservice:v12
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -63,10 +63,10 @@ spec:
           value: "1"
         resources:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 220Mi
           limits:
-            cpu: 200m
+            cpu: 50m
             memory: 450Mi
 ---
 apiVersion: v1
