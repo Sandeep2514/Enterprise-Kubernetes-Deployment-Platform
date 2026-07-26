@@ -3,8 +3,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = "your-dockerhub-username"
         IMAGE_TAG = "v${BUILD_NUMBER}"
+        DOCKER_REPO = "sandeep2514"
     }
 
     stages {
@@ -15,49 +15,66 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Login') {
             steps {
-                dir('application/microservices-demo/src/frontend') {
-		   sh 'docker build -t sandeep2514/frontend:${IMAGE_TAG} .'
-		   sh "docker tag sandeep2514/frontend:${IMAGE_TAG} sandeep2514/frontend:latest"
-		}
-            }
-        }
-	
-	stage('Docker Login') {
-    		steps {
-        	   withCredentials([usernamePassword(
-            		credentialsId: 'Docker_hub',
-            		usernameVariable: 'DOCKER_USER',
-           	 	passwordVariable: 'DOCKER_PASS'
-        		)]) {
-            		sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-        		}
-    		    }
-		}
+                withCredentials([usernamePassword(
+                    credentialsId: 'Docker_hub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
 
-	stage('Push Docker Image') {
- 		   steps {
-        		sh "docker push sandeep2514/frontend:${IMAGE_TAG}"
-       		 	sh "docker push sandeep2514/frontend:latest"
-   		    }
-		}
-
-        stage('SonarQube Analysis') {
-            steps {
-                echo 'Running SonarQube Analysis...'
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
             }
         }
 
-        stage('Docker Build') {
+        stage('Build & Push All Services') {
             steps {
-                echo 'Building Docker Images...'
-            }
-        }
+                script {
 
-        stage('Docker Push') {
-            steps {
-                echo 'Pushing Docker Images to Docker Hub...'
+                    def services = [
+
+                        [name: "frontend",                  path: "frontend"],
+                        [name: "productcatalogservice",     path: "productcatalogservice"],
+                        [name: "cartservice",               path: "cartservice/src"],
+                        [name: "checkoutservice",           path: "checkoutservice"],
+                        [name: "currencyservice",           path: "currencyservice"],
+                        [name: "emailservice",              path: "emailservice"],
+                        [name: "paymentservice",            path: "paymentservice"],
+                        [name: "recommendationservice",     path: "recommendationservice"],
+                        [name: "shippingservice",           path: "shippingservice"],
+                        [name: "adservice",                 path: "adservice"],
+                        [name: "shoppingassistantservice",  path: "shoppingassistantservice"]
+
+                    ]
+
+                    for (service in services) {
+
+                        echo "======================================="
+                        echo "Building ${service.name}"
+                        echo "======================================="
+
+                        dir("application/microservices-demo/src/${service.path}") {
+
+                            sh """
+                                docker build -t ${DOCKER_REPO}/${service.name}:${IMAGE_TAG} .
+                                docker tag ${DOCKER_REPO}/${service.name}:${IMAGE_TAG} ${DOCKER_REPO}/${service.name}:latest
+                            """
+
+                        }
+
+                        sh """
+                            docker push ${DOCKER_REPO}/${service.name}:${IMAGE_TAG}
+                            docker push ${DOCKER_REPO}/${service.name}:latest
+                        """
+
+                        echo "Successfully pushed ${service.name}"
+
+                    }
+
+                }
             }
         }
 
@@ -66,15 +83,18 @@ pipeline {
     post {
 
         always {
-            echo 'Pipeline execution completed.'
+            echo "Pipeline execution completed."
         }
 
         success {
-            echo 'Build completed successfully.'
+            echo "======================================="
+            echo "All microservices built successfully."
+            echo "All Docker images pushed successfully."
+            echo "======================================="
         }
 
         failure {
-            echo 'Build failed.'
+            echo "Pipeline failed. Check the failed service above."
         }
 
     }
